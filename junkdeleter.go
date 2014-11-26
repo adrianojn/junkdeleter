@@ -60,9 +60,9 @@ func findFiles(patterns []string) []string {
 
 func deleteFiles(files []string, ids map[string]bool) {
 	for _, file := range files {
-		cardId := strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
-		cardId = strings.TrimPrefix(cardId, "c") // for scripts
-		if !ids[cardId] {
+		cardID := strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
+		cardID = strings.TrimPrefix(cardID, "c") // for scripts
+		if !ids[cardID] {
 			fmt.Println("removing", file)
 			err := os.Remove(file)
 			if err != nil {
