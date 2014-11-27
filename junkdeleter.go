@@ -23,6 +23,7 @@ var fileList = []string{
 }
 
 var dbName = flag.String("db", "cards.cdb", "name of the database file")
+var listOnly = flag.Bool("list", false, "list the files without deleting")
 
 func main() {
 	flag.Parse()
@@ -63,10 +64,12 @@ func deleteFiles(files []string, ids map[string]bool) {
 		cardID := strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
 		cardID = strings.TrimPrefix(cardID, "c") // for scripts
 		if !ids[cardID] {
-			fmt.Println("removing", file)
-			err := os.Remove(file)
-			if err != nil {
-				fmt.Println("cannot remove ", file, ":", err)
+			fmt.Println("unused", file)
+			if !*listOnly {
+				err := os.Remove(file)
+				if err != nil {
+					fmt.Println("cannot remove", file, "-", err)
+				}
 			}
 		}
 	}
@@ -74,7 +77,8 @@ func deleteFiles(files []string, ids map[string]bool) {
 
 func catch(err error, detail string) {
 	if err != nil {
-		fmt.Println("ERROR ", detail)
-		panic(err)
+		fmt.Println("ERROR\t", detail)
+		fmt.Println("\t", err)
+		os.Exit(1)
 	}
 }
