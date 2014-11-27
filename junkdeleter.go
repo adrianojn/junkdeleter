@@ -30,6 +30,7 @@ func main() {
 
 	db, err := sql.Open("sqlite3", *dbName)
 	catch(err, "could not open cards.cdb")
+	defer db.Close()
 
 	rows, err := db.Query("select id from datas")
 	catch(err, "could not load cards.cdb")
@@ -42,6 +43,8 @@ func main() {
 		ids[id] = true
 	}
 	catch(rows.Err(), "database is corrupted")
+
+	os.Chdir(filepath.Dir(*dbName))
 
 	files := findFiles(fileList)
 	deleteFiles(files, ids)
@@ -65,19 +68,25 @@ func deleteFiles(files []string, ids map[string]bool) {
 		cardID = strings.TrimPrefix(cardID, "c") // for scripts
 		if !ids[cardID] {
 			fmt.Println("unused", file)
-			if !*listOnly {
-				err := os.Remove(file)
-				if err != nil {
-					fmt.Println("cannot remove", file, "-", err)
-				}
-			}
+			deleteFile(file)
 		}
 	}
 }
 
-func catch(err error, detail string) {
+func deleteFile(file string) {
+	if *listOnly {
+		return
+	}
+
+	err := os.Remove(file)
 	if err != nil {
-		fmt.Println("ERROR\t", detail)
+		fmt.Println("cannot remove", file, "-", err)
+	}
+}
+
+func catch(err error, msg string) {
+	if err != nil {
+		fmt.Println("ERROR\t", msg)
 		fmt.Println("\t", err)
 		os.Exit(1)
 	}
