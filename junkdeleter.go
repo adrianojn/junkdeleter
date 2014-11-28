@@ -29,6 +29,8 @@ import (
 var fileList = []string{
 	"pics/*.jpg",
 	"pics/*.JPG",
+	"pics/field/*.jpg",
+	"pics/field/*.JPG",
 	"pics/field/*.png",
 	"pics/field/*.PNG",
 	"pics/thumbnail/*.jpg",
